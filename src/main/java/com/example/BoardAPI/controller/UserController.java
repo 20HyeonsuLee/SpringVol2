@@ -1,5 +1,7 @@
 package com.example.BoardAPI.controller;
 
+import com.example.BoardAPI.domain.LoginRequest;
+import com.example.BoardAPI.domain.LoginResponse;
 import com.example.BoardAPI.domain.User;
 import com.example.BoardAPI.service.UserService;
 import jakarta.persistence.EntityNotFoundException;
@@ -9,6 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
+import javax.naming.AuthenticationException;
 import java.sql.SQLException;
 import java.util.List;
 
@@ -17,6 +20,11 @@ import java.util.List;
 public class UserController {
     @Autowired
     private UserService userService;
+    @PostMapping("/login")
+    public ResponseEntity<LoginResponse> login(@RequestBody LoginRequest loginRequest) throws AuthenticationException {
+        String token = userService.authenticateUser(loginRequest.getUserId(), loginRequest.getPassword());
+        return ResponseEntity.ok(new LoginResponse(token));
+    }
     @GetMapping
     public ResponseEntity<List<User>> allUser() throws SQLException {
         return ResponseEntity.ok(userService.getAllUser());
